@@ -9,7 +9,7 @@
 
 using namespace std;
 
-class Solution {
+class solution {
     
 private:
     
@@ -43,7 +43,7 @@ private:
     
     public :
     
-    Solution(ifstream &file_in, int clck_in = 10, bool DEBUG_in = false);
+    solution(ifstream &file_in, int clck_in = 10, bool DEBUG_in = false);
     
     void dbg(const string &msg);
     
@@ -63,10 +63,10 @@ private:
     
     void print_clck();
     
-    ~Solution();
+    ~solution();
     
 };
-void Solution::execute_line(int &exe_line_num, bool &is_end) {
+void solution::execute_line(int &exe_line_num, bool &is_end) {
     //get a line from vect_lines depends on exe_line_num
     string instr = this->vect_lines[exe_line_num];
     exe_line_num++;
@@ -158,7 +158,7 @@ void Solution::execute_line(int &exe_line_num, bool &is_end) {
     return;
 }
 
-void Solution::if_line(int exe_line_nums[3], int if_return_value[4]) {
+void solution::if_line(int exe_line_nums[3], int if_return_value[4]) {
     //get a line from vect_lines depends on exe_line_num
     string instr = this->vect_lines[exe_line_nums[0]];
     exe_line_nums[1] = exe_line_nums[0];
@@ -216,7 +216,7 @@ void Solution::if_line(int exe_line_nums[3], int if_return_value[4]) {
     
 }
 
-void Solution::exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_values, int if_return_value[4]) {
+void solution::exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_values, int if_return_value[4]) {
     exe_return_values = if_return_value[0];
     if (if_return_value[0] == END) {
         is_end = true;
@@ -268,7 +268,7 @@ void Solution::exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_valu
     }
 }
 
-void Solution::wb_line(int exe_line_nums[3], int exe_return_values) {
+void solution::wb_line(int exe_line_nums[3], int exe_return_values) {
     
     if (exe_return_values < B) {
         cout << this->vect_lines.at(exe_line_nums[2]) << endl;
@@ -284,7 +284,7 @@ void Solution::wb_line(int exe_line_nums[3], int exe_return_values) {
 }
 
 
-vector<int> *Solution::alu() {
+vector<int> *solution::alu() {
     this->print_clck();
     // start execute
     
@@ -333,7 +333,7 @@ vector<int> *Solution::alu() {
     return this->t_vars;
 }
 
-Solution::Solution(ifstream &file_in, int clck_in, bool DEBUG_in) {
+solution::solution(ifstream &file_in, int clck_in, bool DEBUG_in) {
     this->clck = clck_in;
     
     this->DEBUG = DEBUG_in;
@@ -373,7 +373,7 @@ Solution::Solution(ifstream &file_in, int clck_in, bool DEBUG_in) {
     //    string2enum_map.insert(pair<string,op>("end",END));
 }
 
-int Solution::mips_clock() {
+int solution::mips_clock() {
     chrono::milliseconds timespan(clck);
     
     this_thread::sleep_for(timespan);
@@ -385,7 +385,7 @@ int Solution::mips_clock() {
     return cycle;
 }
 
-void Solution::print_t_vars() {
+void solution::print_t_vars() {
     int i = 0;
     for (; i < this->t_vars->size() - 1; i++) {
         cout << this->t_vars->at(i) << ",";
@@ -393,11 +393,11 @@ void Solution::print_t_vars() {
     cout << this->t_vars->at(i) << endl;
 }
 
-void Solution::print_clck() {
+void solution::print_clck() {
     cout << this->clck << endl;
 }
 
-Solution::~Solution() {
+solution::~solution() {
     //    if (t_vars != NULL){
     //        delete t_vars;
     //        cout<<"delete t_vars"<<endl;
@@ -405,7 +405,7 @@ Solution::~Solution() {
     
 }
 
-void Solution::dbg(const string &msg) {
+void solution::dbg(const string &msg) {
     if (this->DEBUG)
         cout << msg << endl;
 }
