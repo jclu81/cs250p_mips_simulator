@@ -4,7 +4,6 @@
 
 #include "Solution.h"
 
-
 using namespace std;
 
 void Solution::execute_line(int &exe_line_num, bool &is_end) {
@@ -100,6 +99,7 @@ void Solution::execute_line(int &exe_line_num, bool &is_end) {
 }
 
 void Solution::if_line(int exe_line_nums[3], int if_return_value[4]) {
+    this->print_string("Fetch: " + this->vect_lines[exe_line_nums[0]]);
     //get a line from vect_lines depends on exe_line_num
     string instr = this->vect_lines[exe_line_nums[0]];
     exe_line_nums[1] = exe_line_nums[0];
@@ -158,6 +158,7 @@ void Solution::if_line(int exe_line_nums[3], int if_return_value[4]) {
 }
 
 void Solution::exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_values, int if_return_value[4]) {
+
     exe_return_values = if_return_value[0];
     if (if_return_value[0] == END) {
         is_end = true;
@@ -165,6 +166,7 @@ void Solution::exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_valu
         cout << this->vect_lines.at(exe_line_nums[1]) << endl;
         return;
     }
+    this->print_string("Execute: " + this->vect_lines[exe_line_nums[1]]);
     exe_line_nums[2] = exe_line_nums[1];
     switch (if_return_value[0]) {
         case ADD:
@@ -203,18 +205,19 @@ void Solution::exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_valu
             cout << "error occurs at " << exe_line_nums[1] << endl;
     }
     if (if_return_value[0] >= B) {
-        cout << this->vect_lines.at(exe_line_nums[1]) << endl;
-        this->print_t_vars();
-        this->print_clck();
+//        cout << this->vect_lines.at(exe_line_nums[1]) << endl;
+//        this->print_t_vars();
+//        this->print_cycle_number();
     }
 }
 
 void Solution::wb_line(int exe_line_nums[3], int exe_return_values) {
 
     if (exe_return_values < B) {
-        cout << this->vect_lines.at(exe_line_nums[2]) << endl;
+        this->print_string("Write_back: " + this->vect_lines[exe_line_nums[2]]);
+//        cout << this->vect_lines.at(exe_line_nums[2]) << endl;
         this->print_t_vars();
-        this->print_clck();
+//        this->print_cycle_number();
     } else {
         //suppose do nothing! but should reverse if line number in this case
         exe_line_nums[0] = -exe_line_nums[0];
@@ -226,57 +229,66 @@ void Solution::wb_line(int exe_line_nums[3], int exe_return_values) {
 
 
 vector<int> *Solution::alu() {
-    this->print_clck();
+//    this->print_cycle_number();
     // start execute
-
+//    // no pipeline
 //    bool is_end = false;
 //    int exe_line_num = 0;
 //    while (true) {
-//        execute_line(exe_line_num, is_end);
-//        if (is_end) {
-//            break;
+//        if (!mips_clock()) {
+//            continue;
+//        } else {
+//            execute_line(exe_line_num, is_end);
+//            if (is_end) {
+//                break;
+//            }
+//            this->print_t_vars();
+//            this->cycle_number++;
+//            this->print_cycle_number();
 //        }
-//        this->print_t_vars();
-//        this->clck++;
-//        this->print_clck();
+//
 //    }
 
-    // pipeling
+    // pipeline
     bool is_end = false;
     int exe_line_nums[3] = {0, -1, -1};
     int if_return_values[4] = {-1, -1, -1, -1};
     int exe_return_values = -1;
     while (true) {
-        this->dbg("Before: clock is " + to_string(this->clck));
-        if (exe_line_nums[2] > -1) {
-            this->dbg(to_string(exe_line_nums[2]) + "'s write back stage!");
-            wb_line(exe_line_nums, exe_return_values);
+        if (!mips_clock()) {
+            continue;
+        } else {
+            this->dbg("Before: clock is " + to_string(this->cycle_number));
+            this->print_string("\nclockcycle: " + to_string(this->cycle_number));
+            if (exe_line_nums[2] > -1) {
+                this->dbg(to_string(exe_line_nums[2]) + "'s write back stage!");
+                wb_line(exe_line_nums, exe_return_values);
 
-        }
-        if (exe_line_nums[1] > -1) {
-            this->dbg(to_string(exe_line_nums[1]) + "'s execute stage!");
-            exe_line(exe_line_nums, is_end, exe_return_values, if_return_values);
+            }
+            if (exe_line_nums[1] > -1) {
+                this->dbg(to_string(exe_line_nums[1]) + "'s execute stage!");
+                exe_line(exe_line_nums, is_end, exe_return_values, if_return_values);
 
-        }
-        if (exe_line_nums[0] > -1) {
-            this->dbg(to_string(exe_line_nums[0]) + "'s IF stage!");
-            if_line(exe_line_nums, if_return_values);
+            }
+            if (exe_line_nums[0] > -1) {
+                this->dbg(to_string(exe_line_nums[0]) + "'s IF stage!");
+                if_line(exe_line_nums, if_return_values);
 
+            }
+            if (is_end) {
+                // all stage are down
+                break;
+            }
+            this->cycle_number++;
+            this->dbg("After: clock is " + to_string(this->cycle_number));
         }
-        if (is_end) {
-            // all stage are down
-            break;
-        }
-        this->clck++;
-        this->dbg("After: clock is " + to_string(this->clck));
     }
-
     return this->t_vars;
 }
 
 Solution::Solution(ifstream &file_in, int clck_in, bool DEBUG_in) {
     this->clck = clck_in;
-
+    this->cycle_number = 0;
     this->DEBUG = DEBUG_in;
     t_vars = new vector<int>;
     string temp;
@@ -334,8 +346,8 @@ void Solution::print_t_vars() {
     cout << this->t_vars->at(i) << endl;
 }
 
-void Solution::print_clck() {
-    cout << this->clck << endl;
+void Solution::print_cycle_number() {
+    cout << this->cycle_number << endl;
 }
 
 Solution::~Solution() {
@@ -343,10 +355,13 @@ Solution::~Solution() {
 //        delete t_vars;
 //        cout<<"delete t_vars"<<endl;
 //    }
-
 }
 
 void Solution::dbg(const string &msg) {
     if (this->DEBUG)
         cout << msg << endl;
+}
+
+void Solution::print_string(const string &msg) {
+    cout << msg << endl;
 }

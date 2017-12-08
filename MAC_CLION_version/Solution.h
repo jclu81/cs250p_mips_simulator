@@ -15,6 +15,7 @@ private:
 
     bool DEBUG;
     int clck;
+    int cycle_number;
     vector<string> vect_lines;
     vector<int> *t_vars;
     unordered_map<string, int> label_map;
@@ -61,7 +62,9 @@ public :
 
     void print_t_vars();
 
-    void print_clck();
+    void print_cycle_number();
+
+    void print_string(const string &msg);
 
     ~Solution();
 

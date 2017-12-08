@@ -9,12 +9,13 @@
 
 using namespace std;
 
-class solution {
+class Solution {
     
 private:
     
     bool DEBUG;
     int clck;
+    int cycle_number;
     vector<string> vect_lines;
     vector<int> *t_vars;
     unordered_map<string, int> label_map;
@@ -43,7 +44,7 @@ private:
     
     public :
     
-    solution(ifstream &file_in, int clck_in = 10, bool DEBUG_in = false);
+    Solution(ifstream &file_in, int clck_in = 10, bool DEBUG_in = false);
     
     void dbg(const string &msg);
     
@@ -53,14 +54,23 @@ private:
     
     void execute_line(int &exe_line_num, bool &is_end);
     
+    //    void if_line(int exe_line_nums[3], int if_return_value[4]);
+    //
+    //    void exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_values, int if_return_value[4]);
+    //
+    //    void wb_line(int exe_line_nums[3], int case_id);
+    
     void print_t_vars();
     
-    void print_clck();
+    void print_cycle_number();
     
-    ~solution();
+    //    void print_string(const string &msg);
+    
+    ~Solution();
     
 };
-void solution::execute_line(int &exe_line_num, bool &is_end) {
+
+void Solution::execute_line(int &exe_line_num, bool &is_end) {
     //get a line from vect_lines depends on exe_line_num
     string instr = this->vect_lines[exe_line_num];
     exe_line_num++;
@@ -152,28 +162,198 @@ void solution::execute_line(int &exe_line_num, bool &is_end) {
     return;
 }
 
-vector<int> *solution::alu() {
-    this->print_clck();
-    // start execute
+//void Solution::if_line(int exe_line_nums[3], int if_return_value[4]) {
+//    this->print_string("Fetch: " + this->vect_lines[exe_line_nums[0]]);
+//    //get a line from vect_lines depends on exe_line_num
+//    string instr = this->vect_lines[exe_line_nums[0]];
+//    exe_line_nums[1] = exe_line_nums[0];
+//
+//    //3 conditions
+//    stringstream instr_stream(instr);
+//    string temp;
+//    getline(instr_stream, temp, ' ');
+//
+//    //1: the first string is end
+//    if (!temp.compare("end")) {
+//        if_return_value[0] = END;
+//        return;
+//    }
+//
+//    //2: the first string is label
+//    if (!temp.substr(0, temp.length() - 1).compare("label")) {
+//        getline(instr_stream, temp, ' ');
+//    }
+//
+//    //3: the first string is instruction name: add/addi/b
+//    int case_id = string2enum_map.at(temp);
+//    if_return_value[0] = case_id;
+//    string data_string[3];
+//    int i = 0;
+//
+//    getline(instr_stream, temp, ',');
+//    while (i < 3 && !temp.empty()) {
+//        data_string[i] = temp;
+//        i++;
+//        getline(instr_stream, temp, ',');
+//    }
+//    if (case_id < B) {
+//        if_return_value[1] = data_string[0].c_str()[1] - '0';
+//        if_return_value[2] = data_string[1].c_str()[1] - '0';
+//        if (case_id == ADDI) {
+//            if_return_value[3] = stoi(data_string[2]);
+//        } else {
+//            if_return_value[3] = data_string[2].c_str()[1] - '0';
+//        }
+//        // not branch
+//        exe_line_nums[0]++;
+//    } else if (case_id == B) {
+//        if_return_value[1] = label_map[data_string[0]];
+//        //stall
+//        exe_line_nums[0] = -1;
+//        return;
+//    } else {
+//        if_return_value[2] = data_string[0].c_str()[1] - '0';
+//        if_return_value[3] = data_string[1].c_str()[1] - '0';
+//        if_return_value[1] = label_map[data_string[2]];
+//        //stall
+//        exe_line_nums[0] = -1;
+//    }
+//
+//}
+
+//void Solution::exe_line(int exe_line_nums[3], bool &is_end, int &exe_return_values, int if_return_value[4]) {
+//
+//    exe_return_values = if_return_value[0];
+//    if (if_return_value[0] == END) {
+//        is_end = true;
+//        exe_line_nums[0] = -1;
+//        cout << this->vect_lines.at(exe_line_nums[1]) << endl;
+//        return;
+//    }
+//    this->print_string("Execute: " + this->vect_lines[exe_line_nums[1]]);
+//    exe_line_nums[2] = exe_line_nums[1];
+//    switch (if_return_value[0]) {
+//        case ADD:
+//            t_vars->at(if_return_value[1]) = t_vars->at(if_return_value[2]) + t_vars->at(if_return_value[3]);
+//            break;
+//        case ADDI:
+//            t_vars->at(if_return_value[1]) = t_vars->at(if_return_value[2]) + if_return_value[3];
+//            break;
+//        case SUB:
+//            t_vars->at(if_return_value[1]) = t_vars->at(if_return_value[2]) - t_vars->at(if_return_value[3]);
+//            break;
+//        case MUL:
+//            t_vars->at(if_return_value[1]) = t_vars->at(if_return_value[2]) * t_vars->at(if_return_value[3]);
+//            break;
+//        case DIV:
+//            t_vars->at(if_return_value[1]) = t_vars->at(if_return_value[2]) / t_vars->at(if_return_value[3]);
+//            break;
+//        case B:
+//            exe_line_nums[0] = -if_return_value[1];
+//            break;
+//        case BEQ:
+//            if (t_vars->at(if_return_value[2]) == t_vars->at(if_return_value[3])) {
+//                exe_line_nums[0] = -if_return_value[1];
+//            } else {
+//                exe_line_nums[0] = -(exe_line_nums[1] + 1);
+//            }
+//            break;
+//        case BNQ:
+//            if (t_vars->at(if_return_value[2]) != t_vars->at(if_return_value[3])) {
+//                exe_line_nums[0] = -if_return_value[1];
+//            } else {
+//                exe_line_nums[0] = -(exe_line_nums[1] + 1);
+//            }
+//            break;
+//        default:
+//            cout << "error occurs at " << exe_line_nums[1] << endl;
+//    }
+//    if (if_return_value[0] >= B) {
+////        cout << this->vect_lines.at(exe_line_nums[1]) << endl;
+////        this->print_t_vars();
+////        this->print_cycle_number();
+//    }
+//}
+
+//void Solution::wb_line(int exe_line_nums[3], int exe_return_values) {
+//
+//    if (exe_return_values < B) {
+//        this->print_string("Write_back: " + this->vect_lines[exe_line_nums[2]]);
+////        cout << this->vect_lines.at(exe_line_nums[2]) << endl;
+//        this->print_t_vars();
+////        this->print_cycle_number();
+//    } else {
+//        //suppose do nothing! but should reverse if line number in this case
+//        exe_line_nums[0] = -exe_line_nums[0];
+//        exe_line_nums[1] = -1;
+//
+//    }
+//    exe_line_nums[2] = -1;
+//}
+
+
+vector<int> *Solution::alu() {
     
+    // start execute
+    // no pipeline
+    this->print_cycle_number();
     bool is_end = false;
     int exe_line_num = 0;
     while (true) {
-        execute_line(exe_line_num, is_end);
-        if (is_end) {
-            break;
+        if (!mips_clock()) {
+            continue;
+        } else {
+            execute_line(exe_line_num, is_end);
+            if (is_end) {
+                break;
+            }
+            this->print_t_vars();
+            this->cycle_number++;
+            this->print_cycle_number();
         }
-        this->print_t_vars();
-        this->clck++;
-        this->print_clck();
+        
     }
+    
+    //    // pipeline
+    //    bool is_end = false;
+    //    int exe_line_nums[3] = {0, -1, -1};
+    //    int if_return_values[4] = {-1, -1, -1, -1};
+    //    int exe_return_values = -1;
+    //    while (true) {
+    //        if (!mips_clock()) {
+    //            continue;
+    //        } else {
+    //            this->dbg("Before: clock is " + to_string(this->cycle_number));
+    //            this->print_string("\nclockcycle: " + to_string(this->cycle_number));
+    //            if (exe_line_nums[2] > -1) {
+    //                this->dbg(to_string(exe_line_nums[2]) + "'s write back stage!");
+    //                wb_line(exe_line_nums, exe_return_values);
+    //
+    //            }
+    //            if (exe_line_nums[1] > -1) {
+    //                this->dbg(to_string(exe_line_nums[1]) + "'s execute stage!");
+    //                exe_line(exe_line_nums, is_end, exe_return_values, if_return_values);
+    //
+    //            }
+    //            if (exe_line_nums[0] > -1) {
+    //                this->dbg(to_string(exe_line_nums[0]) + "'s IF stage!");
+    //                if_line(exe_line_nums, if_return_values);
+    //
+    //            }
+    //            if (is_end) {
+    //                // all stage are down
+    //                break;
+    //            }
+    //            this->cycle_number++;
+    //            this->dbg("After: clock is " + to_string(this->cycle_number));
+    //        }
+    //    }
     return this->t_vars;
-
 }
 
-solution::solution(ifstream &file_in, int clck_in, bool DEBUG_in) {
+Solution::Solution(ifstream &file_in, int clck_in, bool DEBUG_in) {
     this->clck = clck_in;
-    
+    this->cycle_number = 0;
     this->DEBUG = DEBUG_in;
     t_vars = new vector<int>;
     string temp;
@@ -211,7 +391,7 @@ solution::solution(ifstream &file_in, int clck_in, bool DEBUG_in) {
     //    string2enum_map.insert(pair<string,op>("end",END));
 }
 
-int solution::mips_clock() {
+int Solution::mips_clock() {
     chrono::milliseconds timespan(clck);
     
     this_thread::sleep_for(timespan);
@@ -223,7 +403,7 @@ int solution::mips_clock() {
     return cycle;
 }
 
-void solution::print_t_vars() {
+void Solution::print_t_vars() {
     int i = 0;
     for (; i < this->t_vars->size() - 1; i++) {
         cout << this->t_vars->at(i) << ",";
@@ -231,19 +411,22 @@ void solution::print_t_vars() {
     cout << this->t_vars->at(i) << endl;
 }
 
-void solution::print_clck() {
-    cout << this->clck << endl;
+void Solution::print_cycle_number() {
+    cout << this->cycle_number << endl;
 }
 
-solution::~solution() {
+Solution::~Solution() {
     //    if (t_vars != NULL){
     //        delete t_vars;
     //        cout<<"delete t_vars"<<endl;
     //    }
-    
 }
 
-void solution::dbg(const string &msg) {
+void Solution::dbg(const string &msg) {
     if (this->DEBUG)
         cout << msg << endl;
 }
+
+//void Solution::print_string(const string &msg) {
+//    cout << msg << endl;
+//}
