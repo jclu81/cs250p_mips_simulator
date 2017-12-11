@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jclu/CLionProjects/cs_250_pipeline_simulator/Solution.cpp
+Solution.h
+/Users/jclu/CLionProjects/cs_250_pipeline_simulator/Solution.h
+
+/Users/jclu/CLionProjects/cs_250_pipeline_simulator/Solution.h
+iostream
+-
+fstream
+-
+sstream
+-
+string
+-
+vector
+-
+unordered_map
+-
+chrono
+-
+thread
+-
+
+/Users/jclu/CLionProjects/cs_250_pipeline_simulator/main.cpp
+iostream
+-
+fstream
+-
+vector
+-
+thread
+-
+Solution.h
+/Users/jclu/CLionProjects/cs_250_pipeline_simulator/Solution.h
+
